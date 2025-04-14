@@ -1,0 +1,28 @@
+/* filepath: /Users/opolyakov/angProject/gallery-front-end/src/app/components/gallery/gallery.component.scss */
+.gallery {
+  text-align: center;
+
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 16px;
+    margin-top: 16px;
+  }
+
+  .gallery-item {
+    border: 1px solid #ccc;
+    padding: 8px;
+    border-radius: 8px;
+    text-align: center;
+
+    img {
+      max-width: 100%;
+      border-radius: 4px;
+    }
+
+    p {
+      margin-top: 8px;
+      font-size: 14px;
+    }
+  }
+}

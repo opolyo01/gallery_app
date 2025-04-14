@@ -1,0 +1,73 @@
+/* filepath: /Users/opolyakov/angProject/gallery-front-end/src/app/components/signup/signup.component.scss */
+.signup {
+  max-width: 400px;
+  margin: 50px auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+
+  h1 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    color: #333;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+
+    input {
+      padding: 10px;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      width: 100%;
+    }
+
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 10px;
+      font-size: 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+
+      &:hover {
+        background-color: #0056b3;
+      }
+    }
+  }
+
+  .success {
+    color: green;
+    margin-top: 10px;
+  }
+
+  .error {
+    color: red;
+    margin-top: 10px;
+  }
+
+  .login-link {
+    margin-top: 20px;
+    font-size: 0.9rem;
+
+    a {
+      color: #007bff;
+      text-decoration: none;
+      font-weight: bold;
+      cursor: pointer;
+      /* Ensure the link shows a pointer on hover */
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}

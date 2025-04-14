@@ -1,0 +1,12 @@
+<div class="upload">
+  <h1>Upload an Image</h1>
+  <form (submit)="onUpload($event)">
+    <input type="file" (change)="onFileSelected($event)" />
+    <input type="text" placeholder="Enter category" [(ngModel)]="category" name="category" required />
+    <textarea placeholder="Enter description" [(ngModel)]="description" name="description" required></textarea>
+    <button type="submit" [disabled]="!selectedFile || !category || !description">
+      Upload
+    </button>
+  </form>
+  <p *ngIf="uploadMessage">{{ uploadMessage }}</p>
+</div>

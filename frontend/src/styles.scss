@@ -1,0 +1,59 @@
+/* Global Variables */
+$primary-color: #007bff;
+$secondary-color: #0056b3;
+$text-color: #333;
+$background-color: #f8f9fa;
+
+/* Global Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  color: $text-color;
+  background-color: $background-color;
+  line-height: 1.6;
+  margin: 0;
+  padding: 0;
+}
+
+nav {
+  background-color: $primary-color;
+  color: white;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+
+  a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s ease;
+
+    &:hover {
+      color: $secondary-color;
+    }
+  }
+}
+
+.container {
+  max-width: 1200px;
+  margin: 20px auto;
+  padding: 0 15px;
+}
+
+/* Media Query for Smaller Screens */
+@media (max-width: 768px) {
+  nav {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .container {
+    padding: 0 10px;
+  }
+}

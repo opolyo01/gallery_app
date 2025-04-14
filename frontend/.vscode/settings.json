@@ -1,0 +1,20 @@
+{
+  "editor.semanticHighlighting.enabled": false,
+  "editor.tokenColorCustomizations": {
+    "textMateRules": [
+      {
+        "scope": [
+          "entity.name.type",
+          "support.class.component",
+          "meta.decorator",
+          "meta.decorator.ts",
+          "meta.decorator.angular"
+        ],
+        "settings": {
+          "foreground": "#ffffff",
+          "fontStyle": ""
+        }
+      }
+    ]
+  }
+}

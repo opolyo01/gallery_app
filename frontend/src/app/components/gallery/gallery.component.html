@@ -1,0 +1,15 @@
+<div class="gallery">
+  <h1>Gallery</h1>
+  <div *ngIf="filteredImages.length > 0; else noImages">
+    <div class="gallery-grid">
+      <div class="gallery-item" *ngFor="let image of filteredImages">
+        <img [src]="image.fileUrl" [alt]="image.description" />
+        <p><strong>Category:</strong> {{ image.category }}</p>
+        <p><strong>Description:</strong> {{ image.description }}</p>
+      </div>
+    </div>
+  </div>
+  <ng-template #noImages>
+    <p>No images available. <a routerLink="/upload">Upload an image</a> to get started!</p>
+  </ng-template>
+</div>
