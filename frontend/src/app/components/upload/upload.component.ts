@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { environment } from 'src/environments/environment'; // Import environment
 
 @Component({
   selector: 'app-upload',
@@ -36,8 +37,8 @@ export class UploadComponent {
     formData.append('category', this.category);
     formData.append('description', this.description);
 
-    // Replace the URL with your backend API endpoint
-    this.http.post('http://localhost:3000/upload', formData).subscribe({
+    // Use the API URL from the environment file
+    this.http.post(`${environment.apiUrl}/upload`, formData).subscribe({
       next: (response: any) => {
         this.uploadMessage = `Image uploaded successfully! File URL: ${response.fileUrl}`;
         this.selectedFile = null;

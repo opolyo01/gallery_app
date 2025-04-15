@@ -41,6 +41,7 @@ yarn-error.log
 
 # Miscellaneous
 /.angular/cache
+.angular/
 .sass-cache/
 /connect.lock
 /coverage
@@ -51,3 +52,9 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+
+# Ignore environment files
+.env
+
+# Ignore uploads folder
+/backend/uploads
