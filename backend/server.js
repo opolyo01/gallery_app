@@ -71,7 +71,7 @@ app.post('/upload', upload.single('file'), async (req, res) => {
   try {
     // Save metadata to MongoDB
     const image = new Image({
-      fileUrl: `http://localhost:${PORT}/uploads/${req.file.filename}`,
+      fileUrl: `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`,
       category,
       description,
     });
