@@ -56,5 +56,6 @@ Thumbs.db
 # Ignore environment files
 .env
 
-# Ignore uploads folder
-/backend/uploads
+# Ignore all files in uploads except .gitkeep
+/backend/uploads/*
+!/backend/uploads/.gitkeep
