@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-gallery',
@@ -17,7 +18,7 @@ export class GalleryComponent implements OnInit {
 
   ngOnInit(): void {
     // Fetch all images from the server
-    this.http.get<{ fileUrl: string; category: string; description: string }[]>('http://localhost:3000/images')
+    this.http.get<{ fileUrl: string; category: string; description: string }[]>(`${environment.apiUrl}/images`)
       .subscribe({
         next: (data) => {
           this.images = data;

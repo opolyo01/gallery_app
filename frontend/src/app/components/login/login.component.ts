@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-login',
@@ -20,7 +21,7 @@ export class LoginComponent {
 
   onLogin(event: Event): void {
     event.preventDefault();
-    this.http.post('http://localhost:3000/login', { username: this.username, password: this.password })
+    this.http.post(`${environment.apiUrl}/login`, { username: this.username, password: this.password })
       .subscribe({
         next: (response: any) => {
           localStorage.setItem('token', response.token);

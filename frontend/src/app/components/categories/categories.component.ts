@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { environment } from 'src/environments/environment'; // Import environment
 
 @Component({
   selector: 'app-categories',
@@ -16,8 +17,8 @@ export class CategoriesComponent implements OnInit {
   constructor(private router: Router, private http: HttpClient) {}
 
   ngOnInit(): void {
-    // Fetch categories from the server
-    this.http.get<string[]>('http://localhost:3000/categories').subscribe({
+    // Fetch categories from the server using the environment variable
+    this.http.get<string[]>(`${environment.apiUrl}/categories`).subscribe({
       next: (data) => {
         this.categories = data;
       },

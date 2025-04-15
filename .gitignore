@@ -54,7 +54,7 @@ testem.log
 Thumbs.db
 
 # Ignore environment files
-#.env
+.env
 
 # Ignore uploads folder
 /backend/uploads

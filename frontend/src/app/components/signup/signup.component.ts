@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router'; // Import RouterModule
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-signup',
@@ -21,7 +22,7 @@ export class SignupComponent {
 
   onSignup(event: Event): void {
     event.preventDefault();
-    this.http.post('http://localhost:3000/signup', { username: this.username, password: this.password })
+    this.http.post(`${environment.apiUrl}/signup`, { username: this.username, password: this.password })
       .subscribe({
         next: () => {
           this.successMessage = 'User registered successfully!';
