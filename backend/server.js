@@ -30,7 +30,6 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-
 // Enable JSON body parsing
 app.use(express.json());
 
@@ -52,10 +51,12 @@ mongoose.connection.on('disconnected', () => {
 // Define Mongoose schemas and models
 const ImageSchema = new mongoose.Schema({
   fileUrl: String,
-  publicId: String, // Add this field to store the Cloudinary public_id
+  publicId: String,
   category: String,
   description: String,
   uploadedAt: { type: Date, default: Date.now },
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }, // Associate with a user
+  groupId: { type: String }, // Optional: Associate with a group
 });
 
 const Image = mongoose.model('Image', ImageSchema);
@@ -88,20 +89,40 @@ const storage = new CloudinaryStorage({
 
 const upload = multer({ storage });
 
+// Configure Multer to use Cloudinary for multiple files
+const uploadMultiple = multer({ storage }).array('files', 10); // Allow up to 10 files
+
+// Middleware to authenticate requests
+function authenticateToken(req, res, next) {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (!token) {
+    return res.status(401).json({ message: 'Access denied. No token provided.' });
+  }
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    if (err) {
+      return res.status(403).json({ message: 'Invalid token.' });
+    }
+    req.user = user; // Attach user information to the request
+    next();
+  });
+}
+
 // API endpoint for uploading files
-app.post('/upload', upload.single('file'), async (req, res) => {
+app.post('/upload', authenticateToken, upload.single('file'), async (req, res) => {
   const { category, description } = req.body;
 
   try {
-    // Normalize the category to lowercase
-    const normalizedCategory = category.toLowerCase();
+    const normalizedCategory = category ? category.toLowerCase() : 'default';
 
-    // Save metadata to MongoDB
     const image = new Image({
       fileUrl: req.file.path,
       publicId: req.file.filename,
       category: normalizedCategory,
       description,
+      userId: req.user.userId, // Associate with the logged-in user
     });
 
     await image.save();
@@ -118,10 +139,41 @@ app.post('/upload', upload.single('file'), async (req, res) => {
   }
 });
 
-// API endpoint to fetch all images
-app.get('/images', async (req, res) => {
+// API endpoint for uploading multiple files
+app.post('/upload-multiple', authenticateToken, uploadMultiple, async (req, res) => {
+  const { category, description } = req.body;
+
+  if (!req.files || req.files.length === 0) {
+    return res.status(400).json({ message: 'No files uploaded.' });
+  }
+
   try {
-    const images = await Image.find();
+    const normalizedCategory = category ? category.toLowerCase() : 'default';
+
+    const uploadedFiles = req.files.map((file) => ({
+      fileUrl: file.path,
+      publicId: file.filename,
+      category: normalizedCategory,
+      description,
+      userId: req.user.userId, // Associate with the logged-in user
+    }));
+
+    await Image.insertMany(uploadedFiles);
+
+    res.json({
+      message: 'Files uploaded successfully!',
+      files: uploadedFiles,
+    });
+  } catch (err) {
+    console.error('Error uploading files:', err);
+    res.status(500).json({ message: 'Failed to upload files.' });
+  }
+});
+
+// API endpoint to fetch all images
+app.get('/images', authenticateToken, async (req, res) => {
+  try {
+    const images = await Image.find({ userId: req.user.userId }); // Fetch images for the logged-in user
     res.json(images);
   } catch (err) {
     console.error('Error fetching images:', err);
@@ -174,9 +226,9 @@ app.delete('/delete-file/:id', async (req, res) => {
       return res.status(404).json({ message: 'Image not found.' });
     }
 
+    // Delete the file from Cloudinary
     const result = await cloudinary.uploader.destroy(image.publicId);
     if (result.result !== 'ok') {
-      console.error('Failed to delete file from Cloudinary:', result);
       return res.status(500).json({ message: 'Failed to delete file from Cloudinary.' });
     }
 
@@ -229,32 +281,13 @@ app.post('/login', async (req, res) => {
     }
 
     const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '1h' });
+    console.log('Generated token:', token); // Log the generated token
     res.json({ message: 'Login successful!', token });
   } catch (err) {
     console.error('Error during login:', err);
     res.status(500).json({ message: 'Failed to login.' });
   }
 });
-
-// Middleware to authenticate requests
-function authenticateToken(req, res, next) {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
-
-  if (!token) {
-    console.error('No token provided');
-    return res.status(401).json({ message: 'Access denied. No token provided.' });
-  }
-
-  jwt.verify(token, JWT_SECRET, (err, user) => {
-    if (err) {
-      console.error('Invalid token:', err.message);
-      return res.status(403).json({ message: 'Invalid token.' });
-    }
-    req.user = user;
-    next();
-  });
-}
 
 // Protect routes with the `authenticateToken` middleware
 app.get('/protected', authenticateToken, (req, res) => {

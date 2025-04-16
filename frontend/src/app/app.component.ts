@@ -1,13 +1,20 @@
 import { Component } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-root',
-  standalone: true, // Mark the component as standalone
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss'],
   imports: [RouterModule], // Import RouterModule for routing
+  standalone: true,
+  styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
   title = 'gallery-front-end';
+
+  constructor(private router: Router) {}
+
+  logout(): void {
+    localStorage.removeItem('token'); // Remove the token from local storage
+    this.router.navigate(['/login']); // Redirect to the login page
+  }
 }

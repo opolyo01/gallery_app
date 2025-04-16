@@ -12,41 +12,53 @@ import { environment } from 'src/environments/environment'; // Import environmen
   imports: [CommonModule, FormsModule], // Import FormsModule for two-way binding
 })
 export class UploadComponent {
-  selectedFile: File | null = null;
-  category: string = '';
-  description: string = '';
-  uploadMessage: string = '';
+  selectedFiles: File[] = [];
+  category: string = ''; // Optional, default to empty
+  description: string = ''; // Optional, default to empty
+  uploadMessage: string | null = null;
 
   constructor(private http: HttpClient) {}
 
-  onFileSelected(event: Event): void {
+  onFilesSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-      this.selectedFile = input.files[0];
+    if (input.files) {
+      this.selectedFiles = Array.from(input.files); // Store all selected files
     }
   }
 
   onUpload(event: Event): void {
     event.preventDefault();
-    if (!this.selectedFile || !this.category || !this.description) {
+
+    if (this.selectedFiles.length === 0) {
+      this.uploadMessage = 'Please select at least one file.';
       return;
     }
 
     const formData = new FormData();
-    formData.append('file', this.selectedFile);
-    formData.append('category', this.category);
-    formData.append('description', this.description);
+    this.selectedFiles.forEach((file) => {
+      formData.append('files', file); // Append each file to the FormData object
+    });
 
-    // Use the API URL from the environment file
-    this.http.post(`${environment.apiUrl}/upload`, formData).subscribe({
-      next: (response: any) => {
-        this.uploadMessage = `Image uploaded successfully! File URL: ${response.fileUrl}`;
-        this.selectedFile = null;
+    // Use "default" if category is not provided
+    formData.append('category', this.category || 'default');
+    formData.append('description', this.description || ''); // Optional description
+
+    const token = localStorage.getItem('token'); // Retrieve the token from localStorage
+
+    this.http.post(`${environment.apiUrl}/upload-multiple`, formData, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Add the token to the Authorization header
+      },
+    }).subscribe({
+      next: (response) => {
+        this.uploadMessage = 'Files uploaded successfully!';
+        this.selectedFiles = [];
         this.category = '';
         this.description = '';
       },
-      error: () => {
-        this.uploadMessage = 'Failed to upload image.';
+      error: (err) => {
+        console.error('Upload failed:', err);
+        this.uploadMessage = 'Failed to upload files. Please try again.';
       },
     });
   }

@@ -3,7 +3,12 @@
   <div *ngIf="filteredImages.length > 0; else noImages">
     <div class="gallery-grid">
       <div class="gallery-item" *ngFor="let image of filteredImages">
-        <img [src]="image.fileUrl" [alt]="image.description" />
+        <!-- Delete Icon -->
+        <button class="delete-button" (click)="onDeleteImage(image._id)">
+          ✖️
+        </button>
+        <!-- Thumbnail -->
+        <img [src]="image.fileUrl" [alt]="image.description" class="thumbnail" (click)="openLightbox(image)" />
         <p><strong>Category:</strong> {{ image.category }}</p>
         <p><strong>Description:</strong> {{ image.description }}</p>
       </div>
@@ -12,4 +17,14 @@
   <ng-template #noImages>
     <p>No images available. <a routerLink="/upload">Upload an image</a> to get started!</p>
   </ng-template>
+
+  <!-- Lightbox -->
+  <div class="lightbox" *ngIf="selectedImage" (click)="closeLightbox()">
+    <div class="lightbox-content" (click)="$event.stopPropagation()">
+      <img [src]="selectedImage.fileUrl" [alt]="selectedImage.description" />
+      <p><strong>Category:</strong> {{ selectedImage.category }}</p>
+      <p><strong>Description:</strong> {{ selectedImage.description }}</p>
+      <button class="close-button" (click)="closeLightbox()">Close</button>
+    </div>
+  </div>
 </div>

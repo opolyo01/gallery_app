@@ -1,54 +1,75 @@
 /* filepath: /Users/opolyakov/angProject/gallery-front-end/src/app/components/upload/upload.component.scss */
 .upload {
-  text-align: center;
-  margin: 20px;
+  max-width: 500px;
+  margin: 20px auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 
   h1 {
-    font-size: 2rem;
+    font-size: 1.8rem;
     margin-bottom: 20px;
+    text-align: center;
     color: #333;
   }
 
   form {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 10px;
-  }
+    gap: 15px;
 
-  input[type='file'],
-  input[type='text'],
-  textarea {
-    width: 100%;
-    max-width: 400px;
-    padding: 10px;
-    font-size: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-  }
+    .form-group {
+      display: flex;
+      flex-direction: column;
 
-  button {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    font-size: 1rem;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+      label {
+        font-size: 1rem;
+        margin-bottom: 5px;
+        color: #555;
+      }
 
-    &:hover {
-      background-color: #0056b3;
+      input[type='file'],
+      input[type='text'],
+      textarea {
+        padding: 10px;
+        font-size: 1rem;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        width: 100%;
+      }
+
+      textarea {
+        resize: none;
+        height: 80px;
+      }
     }
 
-    &:disabled {
-      background-color: #ccc;
-      cursor: not-allowed;
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 10px;
+      font-size: 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+
+      &:hover {
+        background-color: #0056b3;
+      }
+
+      &:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+      }
     }
   }
 
-  p {
+  .upload-message {
     margin-top: 10px;
     color: green;
+    text-align: center;
   }
 }

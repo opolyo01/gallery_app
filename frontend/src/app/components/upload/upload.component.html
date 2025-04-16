@@ -1,12 +1,25 @@
 <div class="upload">
-  <h1>Upload an Image</h1>
+  <h1>Upload Images</h1>
   <form (submit)="onUpload($event)">
-    <input type="file" (change)="onFileSelected($event)" />
-    <input type="text" placeholder="Enter category" [(ngModel)]="category" name="category" required />
-    <textarea placeholder="Enter description" [(ngModel)]="description" name="description" required></textarea>
-    <button type="submit" [disabled]="!selectedFile || !category || !description">
-      Upload
-    </button>
+    <div class="form-group">
+      <label for="file-input">Select Images</label>
+      <input id="file-input" type="file" (change)="onFilesSelected($event)" multiple accept="image/*" />
+    </div>
+
+    <div class="form-group">
+      <label for="category-input">Category (optional)</label>
+      <input id="category-input" type="text" placeholder="Enter category (default: 'default')" [(ngModel)]="category"
+        name="category" />
+    </div>
+
+    <div class="form-group">
+      <label for="description-input">Description (optional)</label>
+      <textarea id="description-input" placeholder="Enter description (optional)" [(ngModel)]="description"
+        name="description"></textarea>
+    </div>
+
+    <button type="submit" [disabled]="!selectedFiles.length">Upload</button>
   </form>
-  <p *ngIf="uploadMessage">{{ uploadMessage }}</p>
+
+  <p *ngIf="uploadMessage" class="upload-message">{{ uploadMessage }}</p>
 </div>

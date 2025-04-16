@@ -1,4 +1,4 @@
 export const environment = {
   production: false,
-  apiUrl: 'https://backend-black-three-28.vercel.app', // Local backend URL
+  apiUrl: 'http://localhost:3000', // Local backend URL
 };
