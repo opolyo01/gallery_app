@@ -9,7 +9,10 @@
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "server.js"
+      "dest": "server.js",
+      "headers": {
+        "x-vercel-max-body-size": "50mb"
+      }
     }
   ]
 }
