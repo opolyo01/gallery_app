@@ -26,16 +26,10 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
-// Allowed origins
-const allowedOrigins = [
-  'http://localhost:4200', // Local Angular development
-  'https://grand-eclair-97a639.netlify.app', // Deployed frontend
-];
-
 // Enable CORS
 app.use(
   cors({
-    origin: allowedOrigins, // Allow these origins
+    origin: '*', // Allow all origins
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed HTTP methods
     credentials: true, // Allow cookies and authorization headers
     allowedHeaders: ['Content-Type', 'Authorization'], // Allow these headers
