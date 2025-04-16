@@ -87,10 +87,7 @@ const storage = new CloudinaryStorage({
   },
 });
 
-const upload = multer({
-  storage,
-  limits: { fileSize: 40 * 1024 * 1024 }, // Limit file size to 40MB
-});
+const upload = multer({ storage });
 
 // Configure Multer to use Cloudinary for multiple files
 const uploadMultiple = multer({ storage }).array('files', 10); // Allow up to 10 files
