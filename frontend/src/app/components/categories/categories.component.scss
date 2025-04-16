@@ -1,42 +1,62 @@
+/* General styles for the categories container */
 .categories {
   text-align: center;
-  margin: 20px;
+  padding: 20px;
+}
 
-  h1 {
-    font-size: 2rem;
-    margin-bottom: 20px;
-    color: #333;
+.categories h1 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+/* Grid layout for categories */
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  /* Responsive grid */
+  gap: 15px;
+  /* Space between buttons */
+  justify-items: center;
+}
+
+/* Button styles */
+.category-button {
+  background-color: #007bff;
+  /* Bootstrap blue */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 15px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  width: 100%;
+  /* Make buttons stretch to fit grid cells */
+  max-width: 200px;
+  /* Limit button width */
+}
+
+.category-button:hover {
+  background-color: #0056b3;
+  /* Darker blue on hover */
+  transform: scale(1.05);
+  /* Slight zoom effect */
+}
+
+.category-button:active {
+  transform: scale(0.95);
+  /* Slight shrink effect on click */
+}
+
+/* Mobile-specific styles */
+@media (max-width: 768px) {
+  .categories h1 {
+    font-size: 20px;
   }
 
-  ul {
-    list-style: none;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-  }
-
-  li {
-    display: inline-block;
-  }
-
-  button {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    font-size: 1rem;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-
-    &:hover {
-      background-color: #0056b3;
-    }
-
-    &:focus {
-      outline: none;
-      box-shadow: 0 0 5px #007bff;
-    }
+  .category-button {
+    font-size: 14px;
+    padding: 8px 12px;
   }
 }

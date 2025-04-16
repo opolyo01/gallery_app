@@ -1,4 +1,4 @@
 export const environment = {
-  production: true,
-  apiUrl: 'https://gallery-app-j0hg.onrender.com', // Render backend URL
+  production: false,
+  apiUrl: 'http://localhost:3000', // Local backend URL
 };

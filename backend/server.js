@@ -6,6 +6,8 @@ const mongoose = require('mongoose');
 const fs = require('fs');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const cloudinary = require('cloudinary').v2;
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
 require('dotenv').config();
 
 const app = express();
@@ -29,6 +31,7 @@ mongoose
 // Define a Mongoose schema and model for uploaded files
 const ImageSchema = new mongoose.Schema({
   fileUrl: String,
+  publicId: String, // Add this field to store the Cloudinary public_id
   category: String,
   description: String,
   uploadedAt: { type: Date, default: Date.now },
@@ -47,14 +50,19 @@ const User = mongoose.model('User', UserSchema);
 // Secret key for JWT
 const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret_key';
 
-// Configure Multer for file uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads/'); // Save files to the "uploads" folder
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    cb(null, uniqueSuffix + path.extname(file.originalname)); // Add a unique suffix to the file name
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME, // Add these to your .env file
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+// Configure Multer to use Cloudinary
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'gallery_app', // Folder name in Cloudinary
+    allowed_formats: ['jpg', 'jpeg', 'png'], // Allowed file formats
   },
 });
 
@@ -62,16 +70,13 @@ const upload = multer({ storage });
 
 // API endpoint for uploading files
 app.post('/upload', upload.single('file'), async (req, res) => {
-  if (!req.file) {
-    return res.status(400).json({ message: 'No file uploaded.' });
-  }
-
   const { category, description } = req.body;
 
   try {
     // Save metadata to MongoDB
     const image = new Image({
-      fileUrl: `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`,
+      fileUrl: req.file.path, // Cloudinary provides the file URL in `req.file.path`
+      publicId: req.file.filename, // Save the public_id from Cloudinary
       category,
       description,
     });
@@ -81,6 +86,7 @@ app.post('/upload', upload.single('file'), async (req, res) => {
     res.json({
       message: 'File uploaded successfully!',
       fileUrl: image.fileUrl,
+      publicId: image.publicId,
       category: image.category,
       description: image.description,
     });
@@ -144,12 +150,8 @@ app.delete('/delete-file/:id', async (req, res) => {
       return res.status(404).json({ message: 'Image not found.' });
     }
 
-    const filePath = path.join(__dirname, 'uploads', path.basename(image.fileUrl));
-
-    // Delete the file from the file system
-    if (fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath);
-    }
+    // Delete the file from Cloudinary
+    await cloudinary.uploader.destroy(image.publicId);
 
     // Delete the record from the database
     await Image.deleteOne({ _id: image._id });

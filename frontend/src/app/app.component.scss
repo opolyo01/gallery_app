@@ -1,0 +1,58 @@
+/* filepath: /Users/opolyakov/angProject/gallery_app/frontend/src/app/app.component.scss */
+
+/* General styles for the navigation */
+nav {
+  background-color: #f8f9fa;
+  /* Light background for the nav */
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+nav ul {
+  display: flex;
+  justify-content: space-around;
+  /* Space out the links evenly */
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+nav li {
+  flex: 1;
+  /* Make each link take equal space */
+  text-align: center;
+}
+
+nav a {
+  text-decoration: none;
+  color: #007bff;
+  /* Bootstrap blue color */
+  font-size: 16px;
+  padding: 10px;
+  display: block;
+  transition: color 0.3s ease;
+}
+
+nav a:hover {
+  color: #0056b3;
+  /* Darker blue on hover */
+}
+
+/* Mobile-specific styles */
+@media (max-width: 768px) {
+  nav ul {
+    flex-direction: column;
+    /* Stack links vertically on smaller screens */
+    align-items: center;
+  }
+
+  nav li {
+    margin-bottom: 10px;
+    /* Add spacing between links */
+  }
+
+  nav a {
+    font-size: 18px;
+    /* Slightly larger font for mobile */
+  }
+}
