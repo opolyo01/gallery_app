@@ -1,12 +1,19 @@
 <div class="login">
   <h1>Login</h1>
-  <form (submit)="onLogin($event)">
-    <input type="text" placeholder="Username" [(ngModel)]="username" name="username" required />
-    <input type="password" placeholder="Password" [(ngModel)]="password" name="password" required />
+  <form (ngSubmit)="login()">
+    <label for="username">Username:</label>
+    <input type="text" id="username" [(ngModel)]="username" name="username" required />
+
+    <label for="password">Password:</label>
+    <input type="password" id="password" [(ngModel)]="password" name="password" required />
+
     <button type="submit">Login</button>
   </form>
+
+  <!-- Display error message if login fails -->
   <p *ngIf="errorMessage" class="error">{{ errorMessage }}</p>
-  <p class="signup-link">
-    Don't have an account? <a routerLink="/signup">Sign up here</a>.
-  </p>
+
+  <div class="signup-link">
+    <p>Don't have an account? <a routerLink="/signup">Sign up here</a></p>
+  </div>
 </div>

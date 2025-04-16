@@ -15,20 +15,26 @@ import { environment } from 'src/environments/environment';
 export class LoginComponent {
   username = '';
   password = '';
-  errorMessage = '';
+  errorMessage: string | null = null; // Define the errorMessage property
 
   constructor(private http: HttpClient, private router: Router) {}
 
-  onLogin(event: Event): void {
-    event.preventDefault();
-    this.http.post(`${environment.apiUrl}/login`, { username: this.username, password: this.password })
+  login(): void {
+    this.http
+      .post<{ token: string }>(`${environment.apiUrl}/login`, {
+        username: this.username,
+        password: this.password,
+      })
       .subscribe({
-        next: (response: any) => {
-          localStorage.setItem('token', response.token);
-          this.router.navigate(['/']);
+        next: (response) => {
+          localStorage.setItem('token', response.token); // Save the token
+          console.log('Login successful!');
+          this.errorMessage = null; // Clear any previous error messages
+          this.router.navigate(['/categories']); // Redirect after login
         },
         error: (err) => {
-          this.errorMessage = 'Invalid username or password.';
+          console.error('Login failed:', err);
+          this.errorMessage = 'Invalid username or password. Please try again.'; // Set the error message
         },
       });
   }

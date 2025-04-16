@@ -15,6 +15,9 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Trust proxy for Vercel
+app.set('trust proxy', 1);
+
 // Security middleware
 app.use(helmet());
 const limiter = rateLimit({
@@ -33,6 +36,7 @@ app.use(
     origin: allowedOrigins,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true, // Allow cookies and authorization headers
+    allowedHeaders: ['Content-Type', 'Authorization'],
   })
 );
 
@@ -264,6 +268,16 @@ function authenticateToken(req, res, next) {
 // Protect routes with the `authenticateToken` middleware
 app.get('/protected', authenticateToken, (req, res) => {
   res.json({ message: 'This is a protected route.', user: req.user });
+});
+
+// API endpoint for root
+app.get('/', (req, res) => {
+  res.send('Backend is running!');
+});
+
+// Handle favicon.ico requests
+app.get('/favicon.ico', (req, res) => {
+  res.status(204).end(); // No Content
 });
 
 // Global error handler
