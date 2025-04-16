@@ -8,13 +8,33 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const cloudinary = require('cloudinary').v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Security middleware
+app.use(helmet());
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per windowMs
+});
+app.use(limiter);
+
 // Enable CORS
-app.use(cors());
+const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || [
+  'http://localhost:4200',
+  'https://grand-eclair-97a639.netlify.app',
+];
+app.use(
+  cors({
+    origin: allowedOrigins,
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true, // Allow cookies and authorization headers
+  })
+);
 
 // Enable JSON body parsing
 app.use(express.json());
@@ -28,7 +48,13 @@ mongoose
   .then(() => console.log('Connected to MongoDB'))
   .catch((err) => console.error('Failed to connect to MongoDB:', err));
 
-// Define a Mongoose schema and model for uploaded files
+// MongoDB reconnection handling
+mongoose.connection.on('disconnected', () => {
+  console.error('MongoDB connection lost. Retrying...');
+  mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+});
+
+// Define Mongoose schemas and models
 const ImageSchema = new mongoose.Schema({
   fileUrl: String,
   publicId: String, // Add this field to store the Cloudinary public_id
@@ -39,7 +65,6 @@ const ImageSchema = new mongoose.Schema({
 
 const Image = mongoose.model('Image', ImageSchema);
 
-// Define a Mongoose schema and model for users
 const UserSchema = new mongoose.Schema({
   username: { type: String, unique: true, required: true },
   password: { type: String, required: true },
@@ -154,8 +179,11 @@ app.delete('/delete-file/:id', async (req, res) => {
       return res.status(404).json({ message: 'Image not found.' });
     }
 
-    // Delete the file from Cloudinary
-    await cloudinary.uploader.destroy(image.publicId);
+    const result = await cloudinary.uploader.destroy(image.publicId);
+    if (result.result !== 'ok') {
+      console.error('Failed to delete file from Cloudinary:', result);
+      return res.status(500).json({ message: 'Failed to delete file from Cloudinary.' });
+    }
 
     // Delete the record from the database
     await Image.deleteOne({ _id: image._id });
@@ -215,13 +243,17 @@ app.post('/login', async (req, res) => {
 
 // Middleware to authenticate requests
 function authenticateToken(req, res, next) {
-  const token = req.headers['authorization']?.split(' ')[1];
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
   if (!token) {
+    console.error('No token provided');
     return res.status(401).json({ message: 'Access denied. No token provided.' });
   }
 
   jwt.verify(token, JWT_SECRET, (err, user) => {
     if (err) {
+      console.error('Invalid token:', err.message);
       return res.status(403).json({ message: 'Invalid token.' });
     }
     req.user = user;
@@ -234,7 +266,16 @@ app.get('/protected', authenticateToken, (req, res) => {
   res.json({ message: 'This is a protected route.', user: req.user });
 });
 
+// Global error handler
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(err.status || 500).json({ message: err.message || 'Internal Server Error' });
+});
+
 // Start the server
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+
+// Export the app for Vercel
+module.exports = app;
