@@ -30,7 +30,7 @@ export class LoginComponent {
           localStorage.setItem('token', response.token); // Save the token
           console.log('Login successful!');
           this.errorMessage = null; // Clear any previous error messages
-          this.router.navigate(['/categories']); // Redirect after login
+          this.router.navigate(['/']); // Redirect after login
         },
         error: (err) => {
           console.error('Login failed:', err);
