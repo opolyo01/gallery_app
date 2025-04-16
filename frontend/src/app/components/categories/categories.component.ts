@@ -17,10 +17,10 @@ export class CategoriesComponent implements OnInit {
   constructor(private router: Router, private http: HttpClient) {}
 
   ngOnInit(): void {
-    // Fetch categories from the server using the environment variable
     this.http.get<string[]>(`${environment.apiUrl}/categories`).subscribe({
       next: (data) => {
-        this.categories = data;
+        // Normalize categories to lowercase and remove duplicates
+        this.categories = [...new Set(data.map((category) => category.toLowerCase()))];
       },
       error: (err) => {
         console.error('Failed to fetch categories:', err);

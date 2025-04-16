@@ -73,11 +73,14 @@ app.post('/upload', upload.single('file'), async (req, res) => {
   const { category, description } = req.body;
 
   try {
+    // Normalize the category to lowercase
+    const normalizedCategory = category.toLowerCase();
+
     // Save metadata to MongoDB
     const image = new Image({
-      fileUrl: req.file.path, // Cloudinary provides the file URL in `req.file.path`
-      publicId: req.file.filename, // Save the public_id from Cloudinary
-      category,
+      fileUrl: req.file.path,
+      publicId: req.file.filename,
+      category: normalizedCategory,
       description,
     });
 
@@ -86,7 +89,6 @@ app.post('/upload', upload.single('file'), async (req, res) => {
     res.json({
       message: 'File uploaded successfully!',
       fileUrl: image.fileUrl,
-      publicId: image.publicId,
       category: image.category,
       description: image.description,
     });
@@ -110,9 +112,11 @@ app.get('/images', async (req, res) => {
 // API endpoint to fetch categories
 app.get('/categories', async (req, res) => {
   try {
-    // Example: Fetch unique categories from the database
+    // Fetch distinct categories and normalize them to lowercase
     const categories = await Image.distinct('category');
-    res.json(categories);
+    const uniqueCategories = [...new Set(categories.map((cat) => cat.toLowerCase()))];
+
+    res.json(uniqueCategories);
   } catch (err) {
     console.error('Error fetching categories:', err);
     res.status(500).json({ message: 'Failed to fetch categories.' });
