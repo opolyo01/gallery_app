@@ -15,9 +15,6 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Trust proxy for Vercel
-app.set('trust proxy', 1); // Trust the first proxy (required for Vercel)
-
 // Security middleware
 app.use(helmet());
 const limiter = rateLimit({
@@ -27,17 +24,12 @@ const limiter = rateLimit({
 app.use(limiter);
 
 // Enable CORS
-app.use(
-  cors({
-    origin: '*', // Allow all origins
-    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed HTTP methods
-    credentials: true, // Allow cookies and authorization headers
-    allowedHeaders: ['Content-Type', 'Authorization'], // Allow these headers
-  })
-);
+app.use(cors({
+  origin: ['http://localhost:4200', 'https://grand-eclair-97a639.netlify.app'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
-// Handle preflight requests
-app.options('*', cors());
 
 // Enable JSON body parsing
 app.use(express.json());
@@ -272,11 +264,6 @@ app.get('/protected', authenticateToken, (req, res) => {
 // API endpoint for root
 app.get('/', (req, res) => {
   res.send('Backend is running!');
-});
-
-// Handle favicon.ico requests
-app.get('/favicon.ico', (req, res) => {
-  res.status(204).end(); // No Content
 });
 
 // Global error handler
