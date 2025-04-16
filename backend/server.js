@@ -26,19 +26,24 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
-// Enable CORS
-const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || [
-  'http://localhost:4200',
-  'https://grand-eclair-97a639.netlify.app',
+// Allowed origins
+const allowedOrigins = [
+  'http://localhost:4200', // Local Angular development
+  'https://grand-eclair-97a639.netlify.app', // Deployed frontend
 ];
+
+// Enable CORS
 app.use(
   cors({
-    origin: allowedOrigins,
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    origin: allowedOrigins, // Allow these origins
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed HTTP methods
     credentials: true, // Allow cookies and authorization headers
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: ['Content-Type', 'Authorization'], // Allow these headers
   })
 );
+
+// Handle preflight requests
+app.options('*', cors());
 
 // Enable JSON body parsing
 app.use(express.json());
